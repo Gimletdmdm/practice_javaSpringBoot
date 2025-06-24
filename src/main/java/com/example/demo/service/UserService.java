@@ -1,41 +1,49 @@
 package com.example.demo.service;
 
 import org.springframework.stereotype.Service;
-import com.example.demo.model.UserRequest; // UserRequestをインポート
+// import com.example.demo.model.UserRequest; // UserRequestをインポート
+import com.example.demo.entity.User;
+import com.example.demo.repository.UserRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional; // Java 8のOptionalを使用
 
 @Service
 public class UserService {
-    private final List<UserRequest> users = new ArrayList<>();
-    private int nextId = 1;
+    // private final List<UserRequest> users = new ArrayList<>();
+    // private int nextId = 1;
+    private final UserRepository userRepository;
 
-    public UserService() {
+    public UserService(UserRepository userRepository) {
         // 初期データ
-        users.add(new UserRequest("Alice", "alice@example.com"));
-        users.add(new UserRequest("Bob", "bob@example.com"));
+        // users.add(new UserRequest("Alice", "alice@example.com"));
+        // users.add(new UserRequest("Bob", "bob@example.com"));
+        this.userRepository = userRepository;
     }
 
-    public List<UserRequest> getAllUsers() {
-        return new ArrayList<>(users);
+    public List<User> getAllUsers() {
+        return userRepository.findAll(); // JpaRepositoryが提供する全件取得メソッド
     }
 
-    // 注意: UserRequestには現在IDフィールドがありません。
-    // もしIDでユーザーを特定したい場合は、UserRequestクラスにidフィールドを追加し、
-    // このメソッドのロジックもID検索に修正する必要があります。
-    // 今回は簡単なデモのため、このメソッドはここでは使用しません。
-    public Optional<UserRequest> getUserById(int id) {
-        return Optional.empty(); // 仮の実装
+    public Optional<User> getUserById(Long id) { // ★引数の型をLongに変更
+        return userRepository.findById(id); // JpaRepositoryが提供するID検索メソッド
     }
 
-    public UserRequest createUser(UserRequest userRequest) {
-        // 実際のDB保存処理の代わりにリストに追加
-        users.add(userRequest);
-        System.out.println("UserService: ユーザーが追加されました: " + userRequest.getUsername());
-        return userRequest; // 追加されたユーザーを返す
+    public User createUser(User user) { // ★引数の型をUserエンティティに変更
+        return userRepository.save(user); // JpaRepositoryが提供する保存/更新メソッド
     }
 
-    // 今後、更新や削除のロジックもここに書くことができます。
+    public User updateUser(Long id, User userDetails) { // ★追加: 更新メソッド
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id)); // 例外処理
+
+        user.setName(userDetails.getName());
+        user.setEmail(userDetails.getEmail());
+
+        return userRepository.save(user); // 更新されたユーザーを保存
+    }
+
+    public void deleteUser(Long id) { // ★追加: 削除メソッド
+        userRepository.deleteById(id); // JpaRepositoryが提供する削除メソッド
+    }
 }

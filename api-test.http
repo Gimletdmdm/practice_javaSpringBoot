@@ -1,23 +1,30 @@
-### 既存のHello World
-GET http://localhost:8080/hello
+### 全ユーザー取得
+GET http://localhost:8080/api/users
 
-### 名前付き挨拶
-GET http://localhost:8080/hello/greeting?name=YourName
-
-### IDでユーザー情報を取得 (このAPIは今回まだユーザーデータと連動していません)
-GET http://localhost:8080/hello/user/123
-
-### 注文品目を取得
-GET http://localhost:8080/hello/order/A001/item/P102
-
-### 新しいユーザーを作成 (POSTリクエスト)
-POST http://localhost:8080/hello/user
+### 新しいユーザーを作成
+POST http://localhost:8080/api/users
 Content-Type: application/json
 
 {
-    "username": "NewUserFromClient",
-    "email": "new.user@example.com"
+    "username": "David",
+    "email": "david@example.com"
 }
 
-### 全ユーザーを取得 (GETリクエスト)
-GET http://localhost:8080/hello/users
+### 特定のユーザー取得 (作成したユーザーのIDで)
+# 上記のPOSTを実行してレスポンスボディのIDを確認してください。
+# 例: IDが1の場合
+GET http://localhost:8080/api/users/1
+
+### ユーザーを更新 (作成したユーザーのIDで)
+# 例: IDが1のユーザーを更新
+PUT http://localhost:8080/api/users/1
+Content-Type: application/json
+
+{
+    "username": "David Updated",
+    "email": "david.updated@example.com"
+}
+
+### ユーザーを削除 (作成したユーザーのIDで)
+# 例: IDが1のユーザーを削除
+DELETE http://localhost:8080/api/users/1
