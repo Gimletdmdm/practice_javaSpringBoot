@@ -1,5 +1,7 @@
 package com.example.demo.controller;
 
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity; // HTTPレスポンスを柔軟に操作するために使用
 import org.springframework.http.HttpStatus; // HTTPステータスコードのために使用
@@ -28,7 +30,7 @@ public class UserController {
     // ユーザー作成（POST）
     // POST http://localhost:8080/api/users
     @PostMapping
-    public ResponseEntity<UserResponse> createUser(@RequestBody UserRequest userRequest) {
+    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserRequest userRequest) {
         // DTOからエンティティへ変換
         User newUser = new User(userRequest.getUsername(), userRequest.getEmail());
         User savedUser = userService.createUser(newUser);

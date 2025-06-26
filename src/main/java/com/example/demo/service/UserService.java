@@ -3,6 +3,7 @@ package com.example.demo.service;
 import org.springframework.stereotype.Service;
 // import com.example.demo.model.UserRequest; // UserRequestをインポート
 import com.example.demo.entity.User;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.UserRepository;
 
 import java.util.List;
@@ -25,8 +26,9 @@ public class UserService {
         return userRepository.findAll(); // JpaRepositoryが提供する全件取得メソッド
     }
 
-    public Optional<User> getUserById(Long id) { // ★引数の型をLongに変更
-        return userRepository.findById(id); // JpaRepositoryが提供するID検索メソッド
+    public User getUserById(Long id) { // ★引数の型をLongに変更
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id)); // JpaRepositoryが提供するID検索メソッド
     }
 
     public User createUser(User user) { // ★引数の型をUserエンティティに変更
@@ -44,6 +46,9 @@ public class UserService {
     }
 
     public void deleteUser(Long id) { // ★追加: 削除メソッド
+        if ((!userRepository.existsById(id))) {
+            throw new ResourceNotFoundException("User not found with id: " + id);
+        }
         userRepository.deleteById(id); // JpaRepositoryが提供する削除メソッド
     }
 }
