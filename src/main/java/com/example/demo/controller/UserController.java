@@ -55,10 +55,13 @@ public class UserController {
     // GET http://localhost:8080/api/users/{id}
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) { // ★引数の型をLongに変更
-        return userService.getUserById(id)
-                .map(user -> new UserResponse(user.getId(), user.getName(), user.getEmail())) // エンティティをDTOに変換
-                .map(userResponse -> new ResponseEntity<>(userResponse, HttpStatus.OK)) // 200 OK
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND)); // 404 Not Found
+        User user = userService.getUserById(id);
+        if (user != null) {
+            UserResponse userResponse = new UserResponse(user.getId(), user.getName(), user.getEmail());
+            return new ResponseEntity<>(userResponse, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     // ユーザー更新（PUT）
